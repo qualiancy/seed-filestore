@@ -11,6 +11,11 @@
   "engines": {
     "node": ">= 0.4.8"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "tea": "0.1.x",
+    "oath": "0.0.x"
+  },
+  "devDependencies": {
+    "sherlock": "0.1.x"
+  }
 }
