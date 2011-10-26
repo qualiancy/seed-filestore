@@ -1,0 +1,16 @@
+{
+  "author": "Jake Luer <@jakeluer>",
+  "name": "seed-filestore",
+  "description": "Store Seed datasets in a JSON file structure.",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/logicalparadox/seed-filestore.git"
+  },
+  "main": "index",
+  "engines": {
+    "node": ">= 0.4.8"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
