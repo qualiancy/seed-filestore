@@ -17,9 +17,8 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
   });
   
   test('Store -> Seed#model', function (test, done) {
-    var Person = Seed.Model.extend({ 
-      store: Store,
-      path: 'setmodel' 
+    var Person = Seed.Model.extend('person', { 
+      store: Store
     });
     
     var arthur = new Person({
@@ -33,7 +32,7 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
         
         assert.isNull(err);
         assert.isNotNull(this.id);
-        assert.ok(path.existsSync(path.join(_path, this.path, id + '.json')));
+        assert.ok(path.existsSync(path.join(_path, this.type, id + '.json')));
         
         test('can be retrieved', function (test, done) {
           var traveller = new Person({
@@ -47,8 +46,8 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
             test('can be removed', function (test, done) {
               traveller.destroy(function (err) {
                 assert.isNull(err);
-                assert.ok(!path.existsSync(path.join(_path, this.path, id + '.json')));
-                fs.rmdirSync(path.join(_path, this.path));
+                assert.ok(!path.existsSync(path.join(_path, this.type, id + '.json')));
+                fs.rmdirSync(path.join(_path, this.type));
                 done();
               });
               
@@ -66,27 +65,27 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
     done();
   });
   
-  test('Store -> Seed#collection', function (test, done) {
-    var Person = Seed.Model.extend({ 
-      store: Store,
-      path: 'setcollection' 
-    });
+  test('Store -> Seed#graph', function (test, done) {
+    var Person = Seed.Model.extend('person');
     
-    var arthur = new Person({
+    var arthur = {
       name: 'Arthur Dent',
       occupation: 'traveller'
-    });
+    };
     
-    var ford = new Person({
+    var ford = {
       name: 'Ford Prefect',
       occupation: 'writer'
+    };
+    
+    var earth = new Seed.Graph({
+      store: Store
     });
     
-    var earth = new Seed.Collection([arthur, ford], {
-      model: Person,
-      store: Store,
-      path: 'setcollection' 
-    });
+    earth.define(Person);
+    
+    earth.set('/person/arthur', arthur);
+    earth.set('/person/ford', ford);
     
     test('models can be added', function (test, done) {
       earth.push(function (err) {
@@ -98,14 +97,14 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
           , ford_id = ford.id;
         
         test('models can be pulled', function (test, done) {
-          var starship = new Seed.Collection([], {
-            model: Person,
-            store: Store,
-            path: 'setcollection'
+          var starship = new Seed.Graph({
+            store: Store
           });
           
-          starship.create({ id: arthur_id });
-          starship.create({ id: ford_id });
+          starship.define(Person);
+          
+          starship.set('/person/arthur');
+          starship.set('/person/ford');
           
           starship.pull(function (err) {
             assert.isNull(err);
@@ -116,11 +115,11 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
         });
         
         test('models can be fetched', function (test, done) {
-          var starship = new Seed.Collection([], {
-            model: Person,
-            store: Store,
-            path: 'setcollection'
+          var starship = new Seed.Graph({
+            store: Store
           });
+          
+          starship.define(Person);
           
           starship.fetch(function (err) {
             assert.isNull(err);
