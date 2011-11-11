@@ -15,9 +15,9 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
     assert.isNotNull(FileStore.version);
     done();
   });
-  
+  /*
   test('Store -> Seed#model', function (test, done) {
-    var Person = Seed.Model.extend('person', { 
+    var Person = Seed.Model.extend('traveller', { 
       store: Store
     });
     
@@ -64,7 +64,7 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
     
     done();
   });
-  
+  */
   test('Store -> Seed#graph', function (test, done) {
     var Person = Seed.Model.extend('person');
     
@@ -90,11 +90,12 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
     test('models can be added', function (test, done) {
       earth.push(function (err) {
         assert.isNull(err);
-        assert.ok(path.existsSync(path.join(_path, this.path, arthur.id + '.json')));
-        assert.ok(path.existsSync(path.join(_path, this.path, ford.id + '.json')));
+        assert.ok(path.existsSync(path.join(_path, 'person', 'arthur.json')));
+        assert.ok(path.existsSync(path.join(_path, 'person', 'ford.json')));
         
         var arthur_id = arthur.id
           , ford_id = ford.id;
+        
         
         test('models can be pulled', function (test, done) {
           var starship = new Seed.Graph({
@@ -121,7 +122,7 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
           
           starship.define(Person);
           
-          starship.fetch(function (err) {
+          starship.fetch('person', function (err) {
             assert.isNull(err);
             assert.equal(starship.count, 2);
             done();
@@ -130,9 +131,9 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
         });
         
         done(function () {
-          fs.unlinkSync(path.join(_path, 'setcollection', arthur_id + '.json'));
-          fs.unlinkSync(path.join(_path, 'setcollection', ford_id + '.json'));
-          fs.rmdirSync(path.join(_path, 'setcollection'));
+          fs.unlinkSync(path.join(_path, 'person', 'arthur.json'));
+          fs.unlinkSync(path.join(_path, 'person', 'ford.json'));
+          fs.rmdirSync(path.join(_path, 'person'));
         });
       });
     });
