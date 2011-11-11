@@ -15,7 +15,7 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
     assert.isNotNull(FileStore.version);
     done();
   });
-  /*
+  
   test('Store -> Seed#model', function (test, done) {
     var Person = Seed.Model.extend('traveller', { 
       store: Store
@@ -64,7 +64,7 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
     
     done();
   });
-  */
+  
   test('Store -> Seed#graph', function (test, done) {
     var Person = Seed.Model.extend('person');
     

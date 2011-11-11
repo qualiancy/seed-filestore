@@ -1,4 +1,12 @@
 
+0.0.3 / 2011-11-11 
+==================
+
+  * tests compatible with seed 0.0.11 api
+  * tests conform to new sync mehtod
+  * updated filenames based on new seed.sync method
+  * using default seed.sync method
+
 0.0.2 / 2011-10-26 
 ==================
 
