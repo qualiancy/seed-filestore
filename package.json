@@ -9,11 +9,11 @@
   },
   "main": "index",
   "engines": {
-    "node": ">= 0.4.8 < 0.7.0"
+    "node": ">= 0.4.0"
   },
   "dependencies": {
     "tea": "0.1.x",
-    "oath": "0.0.x"
+    "oath": "0.1.x"
   },
   "devDependencies": {
     "sherlock": "0.1.x"
