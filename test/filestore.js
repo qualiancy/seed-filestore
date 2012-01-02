@@ -1,20 +1,52 @@
+var should = require('chai').should();
+
 var Seed = require('seed')
-  , FileStore = require('..')
-  , Sherlock = require('sherlock')
-  , assert = Sherlock.assert;
+  , FileStore = require('..');
 
 var path = require('path')
   , fs = require('fs');
 
+describe('Seed FileStore', function () {
+  
+  var dir = path.join(__dirname, 'data')
+    , Store = new FileStore(dir);
+  
+  it('should have a version', function () {
+    FileStore.version.should.match(/^\d+\.\d+\.\d+$/);
+  });
+  
+  describe('Models', function () {
+  
+    var Person = Seed.Model.extend('traveller', { 
+      store: Store
+    });
+    
+    var arthur = new Person({
+      name: 'Arthur Dent',
+      occupation: 'traveller'
+    });
+    
+    it('should allow saving', function (done) {
+      arthur.save(function (err, data) {
+        var id = this.id;
+        
+        should.not.exist(err);
+        data.should.exist;
+        
+      });
+    });
+  
+  });
+  
+});
+
+
+/*
 module.exports = new Sherlock.Investigation('Seed FileStore', function (test, done) {
   
   var _path = path.join(__dirname, 'data')
     , Store = new FileStore(_path);
   
-  test('FileStore#version', function (test, done) {
-    assert.isNotNull(FileStore.version);
-    done();
-  });
   
   test('Store -> Seed#model', function (test, done) {
     var Person = Seed.Model.extend('traveller', { 
@@ -144,3 +176,5 @@ module.exports = new Sherlock.Investigation('Seed FileStore', function (test, do
   
   done();
 });
+
+*/
