@@ -12,10 +12,10 @@
     "node": ">= 0.4.0"
   },
   "dependencies": {
-    "tea": "0.1.x",
-    "oath": "0.1.x"
+    "oath": "0.2.x"
   },
   "devDependencies": {
-    "sherlock": "0.1.x"
+    "matcha": "*",
+    "chai": "*"
   }
 }
