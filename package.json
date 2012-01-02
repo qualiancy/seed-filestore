@@ -15,7 +15,8 @@
     "oath": "0.2.x"
   },
   "devDependencies": {
-    "matcha": "*",
-    "chai": "*"
+    "mocha": "*",
+    "chai": "*",
+    "matcha": "*"
   }
 }
