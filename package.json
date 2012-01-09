@@ -9,14 +9,11 @@
   },
   "main": "index",
   "engines": {
-    "node": ">= 0.4.0"
+    "node": ">= 0.6.0"
   },
-  "dependencies": {
-    "oath": "0.2.x"
-  },
+  "dependencies": {},
   "devDependencies": {
     "mocha": "*",
-    "chai": "*",
-    "matcha": "*"
+    "chai": "*"
   }
 }
