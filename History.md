@@ -1,4 +1,10 @@
 
+0.1.1 / 2012-01-11 
+==================
+
+  * Seed.Promise, not this.Promise
+  * added vim swp to gitignore
+
 0.1.0 / 2012-01-09
 ==================
 
