@@ -9,7 +9,7 @@ var path = require('path')
 describe('Seed FileStore', function () {
 
   var dir = path.join(__dirname, 'data')
-    , Store = new FileStore({ path: dir });
+    , Store = new FileStore({ path: dir, sync: true });
 
   it('should have a version', function () {
     FileStore.version.should.match(/^\d+\.\d+\.\d+$/);
