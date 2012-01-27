@@ -1,4 +1,15 @@
 
+0.2.0 / 2012-01-27 
+==================
+
+  * node v0.7.0 path/fs (exists(Sync)) compatibility
+  * Merge branch 'feature/sync'
+  * convert tests to sync
+  * added sync variants of all commands .. still promised based but use sync fs commands
+  * added mkdirSync (recursive)
+  * fs.mkdir util is 0.7.x compat (fs.exists)
+  * clean code
+
 0.1.1 / 2012-01-11 
 ==================
 
