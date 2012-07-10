@@ -1,5 +1,5 @@
 {
-  "author": "Jake Luer <@jakeluer>",
+  "author": "Jake Luer <jake@qualiancy.com>",
   "name": "seed-filestore",
   "description": "Store Seed datasets in a JSON file structure.",
   "version": "0.2.1",
@@ -11,9 +11,12 @@
   "engines": {
     "node": ">= 0.6.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "fsagent": "0.2.x"
+  },
   "devDependencies": {
-    "mocha": "*",
-    "chai": "*"
+      "mocha": "*"
+    , "chai": "*"
+    , "seed": "0.4.x"
   }
 }
