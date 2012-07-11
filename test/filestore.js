@@ -4,12 +4,12 @@ var Seed = require('seed')
   , FileStore = require('..');
 
 var path = require('path')
-  , fs = require('fs');
+  , fs = require('fsagent');
 
 describe('Seed FileStore', function () {
 
   var dir = path.join(__dirname, 'data')
-    , Store = new FileStore({ path: dir, sync: true });
+    , store = new FileStore(dir);
 
   it('should have a version', function () {
     FileStore.version.should.match(/^\d+\.\d+\.\d+$/);
@@ -18,7 +18,7 @@ describe('Seed FileStore', function () {
   describe('Models', function () {
 
     var Person = Seed.Model.extend('traveller', {
-        store: Store
+        store: store
     });
 
     var arthur = new Person({
@@ -28,16 +28,16 @@ describe('Seed FileStore', function () {
 
     it('should allow saving', function (done) {
       arthur.save(function (err) {
-        var id = this.id;
+        var id = arthur.id;
         should.not.exist(err);
-        path.existsSync(path.join(dir, this.type, id + '.json')).should.be.true;
+        fs.existsSync(path.join(dir, arthur.type, id + '.json')).should.be.true;
         done();
       });
     });
 
     it('should allow retrieval', function (done) {
       var arthur2 = new Person({
-          id: arthur.id
+          _id: arthur.id
       });
 
       arthur2.fetch(function (err) {
@@ -51,150 +51,152 @@ describe('Seed FileStore', function () {
       arthur.destroy(function (err) {
         var id = this.id;
         should.not.exist(err);
-        path.existsSync(path.join(dir, this.type, id + '.json')).should.be.false;
+        fs.existsSync(path.join(dir, this.type, id + '.json')).should.be.false;
         done();
       });
     });
 
   });
 
-});
-
-
-/*
-module.exports = new Sherlock.Investigation('Seed FileStore', function (test, done) {
-
-  var _path = path.join(__dirname, 'data')
-    , Store = new FileStore(_path);
-
-
-  test('Store -> Seed#model', function (test, done) {
-    var Person = Seed.Model.extend('traveller', {
-      store: Store
-    });
-
-    var arthur = new Person({
-      name: 'Arthur Dent',
-      occupation: 'traveller'
-    });
-
-    test('can be set', function (test, done) {
-      arthur.save(function(err, data) {
-        var id = this.id;
-
-        assert.isNull(err);
-        assert.isNotNull(this.id);
-        assert.ok(path.existsSync(path.join(_path, this.type, id + '.json')));
-
-        test('can be retrieved', function (test, done) {
-          var traveller = new Person({
-            id: id
-          });
-
-          traveller.fetch(function(err) {
-            assert.isNull(err);
-            assert.equal(traveller.get('name'), 'Arthur Dent');
-
-            test('can be removed', function (test, done) {
-              traveller.destroy(function (err) {
-                assert.isNull(err);
-                assert.ok(!path.existsSync(path.join(_path, this.type, id + '.json')));
-                fs.rmdirSync(path.join(_path, this.type));
-                done();
-              });
-
-            });
-
-            done();
-          });
-
+  describe('CRUD from Graph', function () {
+    var graph = new Seed.Graph({
+          store: store
         });
 
-        done();
-      });
-    });
+    var Person = Seed.Model.extend('person', {})
+      , Location = Seed.Model.extend('location', {});
 
-    done();
-  });
-
-  test('Store -> Seed#graph', function (test, done) {
-    var Person = Seed.Model.extend('person');
+    graph.define(Person);
+    graph.define(Location);
 
     var arthur = {
-      name: 'Arthur Dent',
-      occupation: 'traveller'
+        _id: 'arthur'
+      , name: 'Arthur Dent'
+      , stats: {
+            origin: 'Earth'
+          , species: 'human'
+        }
     };
 
     var ford = {
-      name: 'Ford Prefect',
-      occupation: 'writer'
+        _id: 'ford'
+      , name: 'Ford Prefect'
+      , stats: {
+            origin: 'Betelgeuse-ish'
+          , species: 'writer'
+        }
     };
 
-    var earth = new Seed.Graph({
-      store: Store
+    var earth = {
+        _id: 'earth'
+      , name: 'Dent\'s Planet Earth'
+    };
+
+    var ship = {
+        _id: 'gold'
+      , name: 'Starship Heart of Gold'
+    };
+
+    beforeEach(function () {
+      graph.flush();
     });
 
-    earth.define(Person);
+    it('should allow new objects to be created', function (done) {
+      graph.set('person', arthur._id, arthur);
+      graph.set('person', ford._id, ford);
+      graph.set('location', earth._id, earth);
+      graph.set('location', ship._id, ship);
 
-    earth.set('/person/arthur', arthur);
-    earth.set('/person/ford', ford);
+      graph.push(function (err) {
+        should.not.exist(err);
+        done();
+      });
 
-    test('models can be added', function (test, done) {
-      earth.push(function (err) {
-        assert.isNull(err);
-        assert.ok(path.existsSync(path.join(_path, 'person', 'arthur.json')));
-        assert.ok(path.existsSync(path.join(_path, 'person', 'ford.json')));
+    });
 
-        var arthur_id = arthur.id
-          , ford_id = ford.id;
+    it('should allow already existing objects to be read', function (done) {
+      graph.set('person', arthur._id);
+      graph.set('person', ford._id);
+      graph.set('location', earth._id);
+      graph.set('location', ship._id);
 
+      graph.pull({ force: true }, function (err) {
+        should.not.exist(err);
+        graph.length.should.equal(4);
 
-        test('models can be pulled', function (test, done) {
-          var starship = new Seed.Graph({
-            store: Store
-          });
+        var arthur2 = graph.get('person', 'arthur');
+        arthur2._attributes.should.eql(arthur);
+        arthur2.flag('dirty').should.be.false;
+        done();
+      });
+    });
 
-          starship.define(Person);
+    it('should allow all records of a specific type to be fetched', function (done) {
+      graph.fetch('person', function (err) {
+        should.not.exist(err);
+        graph.length.should.equal(2);
 
-          starship.set('/person/arthur');
-          starship.set('/person/ford');
+        var arthur2 = graph.get('person', 'arthur');
+        arthur2._attributes.should.eql(arthur);
+        arthur2.flag('dirty').should.be.false;
+        done();
+      });
+    });
 
-          starship.pull(function (err) {
-            assert.isNull(err);
-            assert.equal(starship.count, 2);
-            done();
-          });
+    it('can handle fetch that returns no results', function (done) {
+      graph.fetch('person', { name: 'Marvin' }, function (err) {
+        should.not.exist(err);
+        graph.length.should.equal(0);
+        done();
+      });
+    });
 
+    it('should allow a subset of existing objects to be selected', function (done) {
+      graph.fetch('person', { 'name': { $eq: 'Arthur Dent' } }, function (err) {
+        should.not.exist(err);
+        graph.length.should.equal(1);
+
+        var arthur2 = graph.get('person', 'arthur');
+        arthur2._attributes.should.eql(arthur);
+        arthur2.flag('dirty').should.be.false;
+        done();
+      });
+    });
+
+    it('show allow an already existing object to be updated', function (done) {
+      graph.fetch('person', function (err) {
+        should.not.exist(err);
+        graph.length.should.equal(2);
+
+        var arthur2 = graph.get('person', 'arthur');
+        arthur2._attributes.should.eql(arthur);
+        arthur2.flag('dirty').should.be.false;
+        arthur2.set('name', 'The Traveler');
+        arthur2.flag('dirty').should.be.true;
+
+        graph.push(function (err) {
+          should.not.exist(err);
+          done();
         });
+      });
+    })
 
-        test('models can be fetched', function (test, done) {
-          var starship = new Seed.Graph({
-            store: Store
-          });
-
-          starship.define(Person);
-
-          starship.fetch('person', function (err) {
-            assert.isNull(err);
-            assert.equal(starship.count, 2);
-            done();
-          });
-
-        });
-
-        done(function () {
-          fs.unlinkSync(path.join(_path, 'person', 'arthur.json'));
-          fs.unlinkSync(path.join(_path, 'person', 'ford.json'));
-          fs.rmdirSync(path.join(_path, 'person'));
+    it('should allow an already existing object to be deleted', function (done) {
+      // deletion is handled through the model interface. this is not currently needed.
+      // perhaps in time, if mass deletion of purging is required.
+      graph.set('person', arthur._id, arthur);
+      graph.set('person', ford._id, ford);
+      graph.set('location', earth._id, earth);
+      graph.set('location', ship._id, ship);
+      var count = 3;
+      graph.each(function (model) {
+        model.destroy(function (err) {
+          should.not.exist(err);
+          count-- || done();
         });
       });
     });
 
-    done();
   });
 
-
-  done();
 });
-
-*/
