@@ -12,7 +12,7 @@
     "node": ">= 0.6.0"
   },
   "dependencies": {
-    "fsagent": "0.2.x"
+    "fsagent": "0.3.x"
   },
   "devDependencies": {
       "mocha": "*"
