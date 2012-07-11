@@ -1,4 +1,12 @@
 
+0.3.0 / 2012-07-10 
+==================
+
+  * update deps
+  * add graph tests
+  * seed uses `_id` not `id`
+  * refactor using new layout
+
 0.2.1 / 2012-01-27 
 ==================
 
