@@ -3,9 +3,10 @@
   "name": "seed-filestore",
   "description": "Store Seed datasets in a JSON file structure.",
   "version": "0.3.0",
+  "homepage": "https://github.com/qualiancy/seed-filestore",
   "repository": {
     "type": "git",
-    "url": "git://github.com/logicalparadox/seed-filestore.git"
+    "url": "git://github.com/qualiancy/seed-filestore.git"
   },
   "main": "index",
   "engines": {
